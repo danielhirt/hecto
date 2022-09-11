@@ -1,6 +1,6 @@
-use std::io::{self, stdout, Write};            
-use termion::event::Key;            
-use termion::input::TermRead;            
+use std::io::{self, stdout, Write};
+use termion::event::Key;
+use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 pub struct Editor {
@@ -21,21 +21,22 @@ impl Editor {
             if let Err(error) = self.process_keypress() {
                 die(error);
             }
-        }          
+        }
     }
-
     pub fn default() -> Self {
-        Self{ should_quit: false }
+        Self { should_quit: false }
     }
 
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
         print!("{}{}", termion::clear::All, termion::cursor::Goto(1, 1));
-        if self.should_quit {            
-            println!("Goodbye.\r");            
+        if self.should_quit {
+            println!("Goodbye.\r");
+        } else {
+            self.draw_rows();
+            print!("{}", termion::cursor::Goto(1, 1));
         }
         io::stdout().flush()
     }
-
     fn process_keypress(&mut self) -> Result<(), std::io::Error> {
         let pressed_key = read_key()?;
         match pressed_key {
@@ -43,6 +44,11 @@ impl Editor {
             _ => (),
         }
         Ok(())
+    }
+    fn draw_rows(&self) {
+        for _ in 0..24 {
+            println!("~\r");
+        }
     }
 }
 
